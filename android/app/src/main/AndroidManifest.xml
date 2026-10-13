@@ -1,0 +1,79 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The app talks to the Poletagging API for everything, so this belongs
+         here and not only in the debug manifest: the debug and profile source
+         sets are build-type scoped, and a release APK built without this fails
+         every request as "could not reach the server" - which reads as a signal
+         problem to a crew standing under a pole. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- The sticker man reads the tag code off the printed sticker with the
+         camera. Declared here rather than in the debug manifest for the same
+         reason as INTERNET above: a release APK built without it cannot open
+         the camera at all. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- Where the pole is. FINE is the one that matters - COARSE alone is
+         network-derived and lands hundreds of metres out, which cannot tell one
+         pole from the next. Both are declared because Android lets the user
+         grant only the coarse one, and the app has to keep working rather than
+         fail outright when he does.
+
+         Not "background" location: the reading is taken while he is looking at
+         the form, never with the app closed. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <application
+        android:label="Pole Identification"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!-- What lets the mini map on the tag form draw anything at all. Google
+             checks this key on every tile request; without it the map is a grey
+             square and the app gives no error to say why.
+
+             Restrict it in Google Cloud to this app's package name, and switch
+             on "Maps SDK for Android" for it, or it stays grey either way. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB9a3Fq4AvnqvlzLZadwSt7LqwEoHtQcIE"/>
+
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>
