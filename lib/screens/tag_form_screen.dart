@@ -1032,6 +1032,7 @@ class _TagFormScreenState extends ConsumerState<TagFormScreen> {
                       'Open the app once where there is signal.',
                 )
               : ListView(
+                  key: ValueKey(_step),
                   padding: const EdgeInsets.all(16),
                   children: [
                     ..._cardsFor(_step, choices),
